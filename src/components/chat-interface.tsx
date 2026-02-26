@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, Sparkles, RotateCcw } from 'lucide-react';
+import { Send, Bot, Sparkles, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -10,21 +10,25 @@ import { detectJokeRequest } from '@/ai/flows/detect-joke-request';
 import { tellHindiJoke } from '@/ai/flows/tell-hindi-joke-flow';
 import { upliftSadUser } from '@/ai/flows/uplift-sad-user';
 import { refuseDarkJoke } from '@/ai/flows/refuse-dark-joke';
+import { generateHindiSpeech } from '@/ai/flows/tts-flow';
 
 export type Message = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  audioUrl?: string;
 };
 
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize welcome message on mount to avoid hydration mismatch with new Date()
+  // Initialize welcome message on mount
   useEffect(() => {
     setMessages([
       {
@@ -44,6 +48,15 @@ export function ChatInterface() {
       }
     }
   }, [messages, isLoading]);
+
+  const playAudio = (url: string) => {
+    if (isMuted) return;
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    audioRef.current = new Audio(url);
+    audioRef.current.play().catch(err => console.error("Audio playback error:", err));
+  };
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -87,11 +100,26 @@ export function ChatInterface() {
           break;
       }
 
+      // Generate TTS for the response
+      let audioUrl = "";
+      if (!isMuted) {
+        try {
+          // Clean text for TTS (strip tone markers like [laughing softly])
+          const cleanText = responseContent.replace(/\[.*?\]/g, '').trim();
+          const ttsResult = await generateHindiSpeech({ text: cleanText });
+          audioUrl = ttsResult.audioDataUri;
+          playAudio(audioUrl);
+        } catch (ttsErr) {
+          console.error("TTS generation failed:", ttsErr);
+        }
+      }
+
       const keeyoMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: responseContent,
         timestamp: new Date(),
+        audioUrl,
       };
 
       setMessages((prev) => [...prev, keeyoMessage]);
@@ -110,12 +138,20 @@ export function ChatInterface() {
   };
 
   const clearChat = () => {
+    if (audioRef.current) audioRef.current.pause();
     setMessages([{
       id: 'welcome',
       role: 'assistant',
       content: 'Arey bhai! Welcome back! Chalo, phir se shuru karte hain. Kya sunoge? "Joke suna" bolo!',
       timestamp: new Date(),
     }]);
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    if (!isMuted && audioRef.current) {
+      audioRef.current.pause();
+    }
   };
 
   return (
@@ -134,9 +170,14 @@ export function ChatInterface() {
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={clearChat} className="text-primary-foreground hover:bg-white/10 rounded-full h-10 w-10">
-          <RotateCcw className="w-5 h-5" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" onClick={toggleMute} className="text-primary-foreground hover:bg-white/10 rounded-full h-10 w-10">
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </Button>
+          <Button variant="ghost" size="icon" onClick={clearChat} className="text-primary-foreground hover:bg-white/10 rounded-full h-10 w-10">
+            <RotateCcw className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Messages area */}
