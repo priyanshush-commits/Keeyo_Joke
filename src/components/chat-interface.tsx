@@ -57,23 +57,21 @@ export function ChatInterface() {
     audioRef.current.play().catch(err => console.error("Audio playback error:", err));
   };
 
-  const handleSend = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const processMessage = async (messageText: string) => {
+    if (!messageText.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: messageText,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
     setIsLoading(true);
 
     try {
-      const intentResult = await detectJokeRequest({ message: input });
+      const intentResult = await detectJokeRequest({ message: messageText });
       let responseContent = "";
 
       switch (intentResult.intent) {
@@ -86,7 +84,7 @@ export function ChatInterface() {
           responseContent = refusal.message;
           break;
         case 'user_sad':
-          const uplift = await upliftSadUser({ userMessage: input });
+          const uplift = await upliftSadUser({ userMessage: messageText });
           responseContent = uplift.keeyoResponse;
           break;
         case 'user_laughed':
@@ -131,6 +129,15 @@ export function ChatInterface() {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSend = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const text = input;
+    if (text.trim()) {
+      setInput('');
+      await processMessage(text);
     }
   };
 
@@ -238,7 +245,7 @@ export function ChatInterface() {
             <button
               key={hint}
               type="button"
-              onClick={() => { setInput(hint); }}
+              onClick={() => { processMessage(hint); }}
               className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-primary hover:bg-primary/10 px-4 py-2 rounded-lg border border-white/5 transition-all whitespace-nowrap backdrop-blur-sm"
             >
               {hint}
