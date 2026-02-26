@@ -30,31 +30,40 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   return (
     <div className={cn(
-      "flex w-full items-start gap-3 group animate-in fade-in duration-300",
+      "flex w-full items-start gap-4 group animate-in fade-in duration-500 slide-in-from-bottom-2",
       isKeeyo ? "flex-row" : "flex-row-reverse"
     )}>
       {/* Avatar */}
       <div className={cn(
-        "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm",
-        isKeeyo ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+        "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border transform transition-all group-hover:scale-110",
+        isKeeyo ? "keeyo-gradient text-white border-transparent" : "bg-muted text-muted-foreground border-border/50"
       )}>
-        {isKeeyo ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+        {isKeeyo ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
       </div>
 
-      {/* Bubble */}
+      {/* Bubble Container */}
       <div className={cn(
-        "flex flex-col max-w-[85%]",
+        "flex flex-col max-w-[80%]",
         isKeeyo ? "items-start" : "items-end"
       )}>
+        {/* Name Tag (Optional, but adds personality) */}
+        <span className={cn(
+          "text-[10px] font-black uppercase tracking-widest mb-1 mx-1 opacity-40",
+          isKeeyo ? "text-primary" : "text-muted-foreground"
+        )}>
+          {isKeeyo ? "Keeyo" : "Tum"}
+        </span>
+
+        {/* Bubble */}
         <div className={cn(
-          "px-4 py-3 shadow-sm text-[15px] leading-relaxed",
+          "px-5 py-4 shadow-sm text-[15px] leading-relaxed relative",
           isKeeyo ? "chat-bubble-keeyo" : "chat-bubble-user"
         )}>
           {processContent(message.content)}
         </div>
         
         {/* Timestamp/Meta */}
-        <span className="text-[10px] text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity px-1">
+        <span className="text-[10px] font-medium text-muted-foreground mt-2 opacity-0 group-hover:opacity-100 transition-opacity px-1">
           {mounted ? message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null}
         </span>
       </div>
