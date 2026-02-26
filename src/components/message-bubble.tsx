@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Message } from './chat-interface';
@@ -11,6 +11,11 @@ interface MessageBubbleProps {
 
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isKeeyo = message.role === 'assistant';
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Helper to process content and wrap tone markers in specific styling
   const processContent = (text: string) => {
@@ -50,7 +55,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         
         {/* Timestamp/Meta */}
         <span className="text-[10px] text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity px-1">
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {mounted ? message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null}
         </span>
       </div>
     </div>

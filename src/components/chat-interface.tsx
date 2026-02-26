@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Sparkles, RotateCcw } from 'lucide-react';
+import { Send, Bot, Sparkles, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,17 +19,22 @@ export type Message = {
 };
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: 'Arey bhai! Kaise ho? Main hu Keeyo, tumhara funny Indian friend. 🇮🇳\nKoi mast sa joke sunna hai? Bas bolo "joke suna" aur dekho kamaal! 😂',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Initialize welcome message on mount to avoid hydration mismatch with new Date()
+  useEffect(() => {
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: 'Arey bhai! Kaise ho? Main hu Keeyo, tumhara funny Indian friend. 🇮🇳\nKoi mast sa joke sunna hai? Bas bolo "joke suna" aur dekho kamaal! 😂',
+        timestamp: new Date(),
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
