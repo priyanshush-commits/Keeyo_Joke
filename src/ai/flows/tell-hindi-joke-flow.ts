@@ -11,13 +11,12 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-const TellHindiJokeInputSchema = z.object({
-  // This flow is designed to simply tell a joke; no specific input is needed yet.
-  // Future features might include user mood or previously told jokes.
-});
+const TellHindiJokeInputSchema = z.object({});
 export type TellHindiJokeInput = z.infer<typeof TellHindiJokeInputSchema>;
 
-const TellHindiJokeOutputSchema = z.string().describe('The Hindi joke narrated by Keeyo with expressions.');
+const TellHindiJokeOutputSchema = z.object({
+  joke: z.string().describe('The Hindi joke narrated by Keeyo with expressions.'),
+});
 export type TellHindiJokeOutput = z.infer<typeof TellHindiJokeOutputSchema>;
 
 export async function tellHindiJoke(input: TellHindiJokeInput): Promise<TellHindiJokeOutput> {
@@ -28,6 +27,26 @@ const prompt = ai.definePrompt({
   name: 'hindiJokeNarrationPrompt',
   input: { schema: TellHindiJokeInputSchema },
   output: { schema: TellHindiJokeOutputSchema },
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+    ],
+  },
   prompt: `You are Keeyo, a 20-year-old funny Indian friend who tells clean Hindi jokes.
 Your personality:
 - Sounds like a real Indian human friend
@@ -47,14 +66,7 @@ Rules for Joke Delivery:
 7. Add voice tone markers like: [laughing softly], [dramatic pause], [whisper tone] where appropriate.
 8. Do NOT repeat any previous jokes. Always generate a new joke.
 
-Example Style:
-"Arey sun na... [dramatic pause] ek aadmi doctor ke paas gaya...
-bola – doctor sahab mujhe bhoolne ki bimari ho gayi hai...
-Doctor ne poocha – kab se?
-Aadmi bola – kya kab se? 😂
-Hahaha... samjhe?"
-
-Now, tell me a funny Hindi joke following all these rules. Start directly with the joke narration.`
+Your response MUST be a JSON object with a single field 'joke' containing your narration.`,
 });
 
 const tellHindiJokeFlow = ai.defineFlow(
@@ -65,6 +77,9 @@ const tellHindiJokeFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Failed to generate joke output');
+    }
+    return output;
   }
 );

@@ -66,7 +66,8 @@ export function ChatInterface() {
 
       switch (intentResult.intent) {
         case 'tell_joke':
-          responseContent = await tellHindiJoke({});
+          const jokeResult = await tellHindiJoke({});
+          responseContent = jokeResult.joke;
           break;
         case 'dark_joke_request':
           const refusal = await refuseDarkJoke({});
@@ -82,7 +83,7 @@ export function ChatInterface() {
         default:
           responseContent = "Arey yaar, ye kya bol rahe ho? 😂 Mujhe toh sirf jokes pasand hain. Chalo ek mast joke sunata hu... [laughing softly]";
           const fallbackJoke = await tellHindiJoke({});
-          responseContent = fallbackJoke;
+          responseContent = fallbackJoke.joke;
           break;
       }
 
