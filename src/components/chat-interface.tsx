@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, Sparkles, RotateCcw, Volume2, VolumeX, Ghost } from 'lucide-react';
+import { Send, Cpu, Sparkles, RefreshCw, Volume2, VolumeX, Terminal, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -29,12 +29,11 @@ export function ChatInterface() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Prevent hydration mismatch by setting initial message on client mount
     setMessages([
       {
         id: 'welcome',
         role: 'assistant',
-        content: 'Arey bhai! Kaise ho? Main hu Keeyo, tumhara funny Indian friend. 🇮🇳\nKoi mast sa joke sunna hai? Bas bolo "joke suna" aur dekho kamaal! 😂',
+        content: '[SYSTEM INITIALIZED]\nNamaste User. I am Keeyo, your Cyber-Hindi Comedy Core. 🤖✨\nRequesting "joke suna" for mood optimization! Phir system refresh ho jayega. 😂',
         timestamp: new Date(),
       },
     ]);
@@ -91,10 +90,10 @@ export function ChatInterface() {
           responseContent = uplift.keeyoResponse;
           break;
         case 'user_laughed':
-          responseContent = "Arey maza aa gaya na! 😂 [laughing softly] Bhai tumhari hansi dekh ke dil khush ho gaya. Phir se ek sunau kya? Bas bolo!";
+          responseContent = "Dopamine levels stabilized! 😂 [laughing softly] System optimization complete. Ek aur dose chahiye?";
           break;
         default:
-          responseContent = "Arey yaar, ye kya bol rahe ho? 😂 Mujhe toh sirf jokes pasand hain. Chalo ek mast joke sunata hu... [laughing softly]";
+          responseContent = "Decoding failure... 😂 [laughing softly] Let's fallback to primary humor protocol.";
           const fallbackJoke = await tellHindiJoke({});
           responseContent = fallbackJoke.joke;
           break;
@@ -126,7 +125,7 @@ export function ChatInterface() {
       const errorMessage: Message = {
         id: 'error',
         role: 'assistant',
-        content: "Arey yaar... lagta hai mera dimaag thoda ghum gaya hai. 🤯 Ek baar phir se try karein?",
+        content: "CRITICAL SYSTEM ERROR: Humour drive disconnected. 🤯 Rebooting process...",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -140,7 +139,7 @@ export function ChatInterface() {
     setMessages([{
       id: 'welcome',
       role: 'assistant',
-      content: 'Arey bhai! Welcome back! Chalo, phir se shuru karte hain. Kya sunoge? "Joke suna" bolo!',
+      content: 'System hard reset complete. 🔄 Humor protocols online. "Joke suna" command expected.',
       timestamp: new Date(),
     }]);
   };
@@ -153,57 +152,56 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background relative overflow-hidden">
-      {/* Decorative Elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-orange-400/5 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="flex flex-col h-full bg-transparent relative overflow-hidden">
+      {/* Holographic Overlays */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent blur-sm animate-pulse" />
+      
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-5 bg-card border-b border-border/40 shrink-0 z-10 backdrop-blur-sm bg-card/80">
+      <div className="flex items-center justify-between px-6 py-6 border-b border-white/5 shrink-0 z-10 backdrop-blur-xl bg-black/20">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-12 h-12 rounded-2xl keeyo-gradient flex items-center justify-center shadow-lg shadow-orange-500/20 transform -rotate-3 transition-transform hover:rotate-0">
-              <Bot className="w-7 h-7 text-white" />
+            <div className="w-14 h-14 rounded-2xl keeyo-gradient flex items-center justify-center shadow-[0_0_20px_rgba(0,255,255,0.3)] transform transition-transform hover:scale-105">
+              <Cpu className="w-8 h-8 text-white animate-pulse" />
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-card shadow-sm" />
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-cyan-400 border-2 border-background shadow-[0_0_10px_rgba(0,255,255,0.8)]" />
           </div>
           <div>
-            <h1 className="font-bold text-xl tracking-tight text-foreground">Keeyo</h1>
-            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              Bhai hamesha online hai!
+            <h1 className="font-bold text-2xl tracking-tighter text-white neon-glow">KEEYO v2.0</h1>
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/70">
+              <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+              HUMOR_PROTOCOL_ACTIVE
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleMute} className="rounded-xl h-10 w-10 hover:bg-muted text-muted-foreground hover:text-primary transition-colors">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={toggleMute} className="rounded-xl h-11 w-11 hover:bg-white/5 text-muted-foreground hover:text-primary transition-all">
             {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={clearChat} className="rounded-xl h-10 w-10 hover:bg-muted text-muted-foreground hover:text-destructive transition-colors">
-            <RotateCcw className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={clearChat} className="rounded-xl h-11 w-11 hover:bg-white/5 text-muted-foreground hover:text-accent transition-all">
+            <RefreshCw className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
       {/* Messages area */}
       <div className="flex-1 relative overflow-hidden">
-        <ScrollArea ref={scrollRef} className="h-full px-4 py-8">
-          <div className="space-y-8 max-w-2xl mx-auto">
+        <ScrollArea ref={scrollRef} className="h-full px-6 py-8">
+          <div className="space-y-10 max-w-2xl mx-auto">
             {messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
             ))}
             {isLoading && (
-              <div className="flex items-start gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="w-10 h-10 rounded-2xl bg-muted flex items-center justify-center shrink-0 border border-border/50">
-                  <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+              <div className="flex items-start gap-4 animate-in fade-in duration-700">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10">
+                  <Terminal className="w-5 h-5 text-primary animate-pulse" />
                 </div>
-                <div className="bg-card border border-border/60 px-5 py-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-2 h-2 bg-primary/30 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce [animation-delay:0.4s]" />
+                <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-3">
+                  <div className="flex gap-2">
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:1s]" />
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s] [animation-duration:1s]" />
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s] [animation-duration:1s]" />
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground ml-2 italic">Keeyo soch raha hai...</span>
+                  <span className="text-[10px] font-black tracking-widest text-primary/60 uppercase">Processing...</span>
                 </div>
               </div>
             )}
@@ -212,36 +210,36 @@ export function ChatInterface() {
       </div>
 
       {/* Input area */}
-      <div className="p-6 border-t border-border/40 bg-card/50 backdrop-blur-md shrink-0">
+      <div className="p-8 border-t border-white/5 bg-black/20 backdrop-blur-3xl shrink-0">
         <form onSubmit={handleSend} className="max-w-2xl mx-auto flex items-center gap-4">
           <div className="relative flex-1 group">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Arey bolo na, 'joke suna'..."
-              className="flex-1 rounded-[1.25rem] h-14 px-6 border-border/60 focus:ring-2 focus:ring-primary/20 shadow-sm bg-background/80 transition-all group-hover:border-primary/40"
+              placeholder="Execute command: 'joke suna'..."
+              className="flex-1 rounded-xl h-16 px-6 border-white/10 focus:ring-1 focus:ring-primary/40 shadow-inner bg-white/5 text-white placeholder:text-muted-foreground/40 transition-all"
               disabled={isLoading}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity">
-              <Ghost className="w-5 h-5" />
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover:opacity-60 transition-opacity">
+              <Zap className="w-5 h-5 text-primary" />
             </div>
           </div>
           <Button 
             type="submit" 
             size="icon" 
             disabled={!input.trim() || isLoading}
-            className="rounded-[1.25rem] h-14 w-14 shrink-0 keeyo-gradient text-white shadow-xl shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale"
+            className="rounded-xl h-16 w-16 shrink-0 keeyo-gradient text-white shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all hover:scale-105 active:scale-95 disabled:opacity-20 disabled:grayscale"
           >
-            <Send className="w-6 h-6" />
+            <Send className="w-7 h-7" />
           </Button>
         </form>
-        <div className="flex justify-center mt-4 gap-4 overflow-x-auto no-scrollbar py-1">
+        <div className="flex justify-center mt-6 gap-3 overflow-x-auto no-scrollbar py-1">
           {['Joke suna', 'Kuch achha sunao', 'Mood kharab hai'].map((hint) => (
             <button
               key={hint}
               type="button"
               onClick={() => { setInput(hint); }}
-              className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-primary hover:bg-primary/5 px-3 py-1.5 rounded-full border border-border/40 transition-all whitespace-nowrap"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-primary hover:bg-primary/10 px-4 py-2 rounded-lg border border-white/5 transition-all whitespace-nowrap backdrop-blur-sm"
             >
               {hint}
             </button>
